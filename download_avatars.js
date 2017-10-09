@@ -1,26 +1,30 @@
-const repoOwner = process.argv[2];
-const repo = process.argv[3];
+var repoOwner = process.argv[2];
+var repoName = process.argv[3];
 
-const log = console.log;
+var log = console.log;
 
-const request = require("request");
+var request = require("request");
+var fs = require('fs');
 
-var options = {
-  url: `https://api.github.com/repos/${repoOwner}/${repo}/contributors`,
-  headers: {
-    "User-Agent": "jong86"
-  }
-};
 
-function callbackContributors(error, response, body) {
-  if (!error && response.statusCode == 200) {
-    let info = JSON.parse(body);
-    for (let i = 0; i < info.length; i++) {
-      console.log(info[i].login);
-    }
-  }
+var GITHUB_USER = "jong86";
+var GITHUB_TOKEN = "e508af8416da135ae64457edbe016e70b0c11e09";
+
+var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
+
+function getRepoContributors(repoOwner, repoName, cb) {
+
+  
 }
 
-request(options, callbackContributors);
+console.log(requestURL);
+
+getRepoContributors(repoOwner, repoName, function(err, result) {
+  console.log("Errors:", err);
+  console.log("Result:", result);
+});
+
+
+// request(options, callbackContributors);
 
 //options.url = `URL_FOR_EACH_CONTRIBUTOR`;
