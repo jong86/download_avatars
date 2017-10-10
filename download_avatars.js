@@ -1,5 +1,5 @@
-if (process.argv[2] === undefined || process.argv[3] === undefined) {
-  console.error("ERROR: No arguments provided. Correct usage is \"node download_avatars.js <repo_owner> <repo_name>\"");
+if (process.argv[2] === undefined || process.argv[3] === undefined || process.argv.length >= 5) {
+  console.error("ERROR: Incorrent number of arguments provided. Correct usage is \"node download_avatars.js <repo_owner> <repo_name>\"");
   process.exit();
 }
 
@@ -12,11 +12,23 @@ var fs = require("fs");
 var repoOwner = process.argv[2];
 var repoName = process.argv[3];
 var GITHUB_USER = "jong86";
-var GITHUB_TOKEN = process.env.DB_TOKEN;
+if (process.env.DB_TOKEN) { 
+  GITHUB_TOKEN = process.env.DB_TOKEN;
+} else {
+  console.log("DB_TOKEN not defined in .env file. Program closing.");
+  process.exit();
+}
 
+var requestURL = "https://" + GITHUB_USER + ":" + GITHUB_TOKEN + "@api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors";
+
+fs.access('./.env', fs.F_OK, function (err) {
+  if (err) {
+    console.log("Cannot find .env file. Program closing.");
+    process.exit();
+  }
+});
 
 function getRepoContributors(repoOwner, repoName, cb) {
-  var requestURL = "https://" + GITHUB_USER + ":" + GITHUB_TOKEN + "@api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors";
   var options = {
     url: requestURL,
     headers: {
@@ -26,7 +38,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
   // Creates folder if doesn't already exist:
   fs.existsSync("avatars") || fs.mkdirSync("avatars");
   request(options, function(err, res, body) {
-    cb(err, body);
+    cb(err, res, body);
   });
 }
 
@@ -54,11 +66,18 @@ function downloadImageByUrl(url, filePath, totalImages) {
     });
 }
 
-function cbContributors(err, result) {
+function cbContributors(err, res, result) {
   if (err !==  null) {
     console.log("Errors:", err, "\n");
   }
   let data = JSON.parse(result);
+  if (res.statusCode === 404) {
+    console.log("Repo not found.");
+    process.exit();
+  } else if (res.statusCode === 401) {
+    console.log("Invalid token.");
+    process.exit();
+  };
   // Loop through data for each contributor:
   for (let i = 0; i < data.length; i++) {
     downloadImageByUrl(data[i].avatar_url, data[i].login, data.length);
