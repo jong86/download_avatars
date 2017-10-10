@@ -3,16 +3,16 @@ if (process.argv[2] === undefined || process.argv[3] === undefined) {
   process.exit();
 }
 
-var repoOwner = process.argv[2];
-var repoName = process.argv[3];
+require("dotenv").config();
 
 var request = require("request");
 var https = require("https");
 var fs = require("fs");
-var imageType = require("image-type");
 
+var repoOwner = process.argv[2];
+var repoName = process.argv[3];
 var GITHUB_USER = "jong86";
-var GITHUB_TOKEN = "e508af8416da135ae64457edbe016e70b0c11e09";
+var GITHUB_TOKEN = process.env.DB_TOKEN;
 
 
 function getRepoContributors(repoOwner, repoName, cb) {
