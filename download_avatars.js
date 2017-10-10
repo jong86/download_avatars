@@ -23,6 +23,8 @@ function getRepoContributors(repoOwner, repoName, cb) {
       "User-Agent": "jong86"
     }
   };
+  // Creates folder if doesn't already exist:
+  fs.existsSync("avatars") || fs.mkdirSync("avatars");
   request(options, function(err, res, body) {
     cb(err, body);
   });
