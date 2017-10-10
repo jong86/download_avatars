@@ -41,12 +41,13 @@ function downloadImageByUrl(url, filePath, totalImages) {
       // Store file extension for naming file:
       ext = response.headers["content-type"].slice(6);
     })
+    // Create image file:
     .pipe(fs.createWriteStream(`avatars/${filePath}`))
     .on("finish", function() {
       totalDownloaded += 1;
       var percent = Math.floor(totalDownloaded / totalImages * 100);
       console.log(`Finished downloading image "${filePath}.${ext}" -- ${percent}% complete`);
-      // Rename file with proper extension after creating it:
+      // Rename image file with proper extension after creating it:
       fs.rename(`avatars/${filePath}`, `avatars/${filePath}.${ext}`, function(err) {
         if(err) { console.log("ERROR: " + err); }
       });
@@ -58,6 +59,7 @@ function cbContributors(err, result) {
     console.log("Errors:", err, "\n");
   }
   let data = JSON.parse(result);
+  // Loop through data for each contributor:
   for (let i = 0; i < data.length; i++) {
     downloadImageByUrl(data[i].avatar_url, data[i].login, data.length);
   }
