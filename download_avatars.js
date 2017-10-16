@@ -1,3 +1,5 @@
+// To use in CLI: node download_avatars.js <repo_owner> <repo_name>
+
 if (process.argv[2] === undefined || process.argv[3] === undefined || process.argv.length >= 5) {
   console.error("ERROR: Incorrent number of arguments provided. Correct usage is \"node download_avatars.js <repo_owner> <repo_name>\"");
   process.exit();
